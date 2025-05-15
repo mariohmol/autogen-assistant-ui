@@ -1,22 +1,17 @@
 "use client";
 
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
-import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { Thread } from "@/components/assistant-ui/thread";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import {
-  useExternalMessageConverter,
-  useExternalStoreRuntime,
-} from "@assistant-ui/react";
+
 
 import {
   useLocalRuntime,
   type ChatModelAdapter,
 } from "@assistant-ui/react";
-import { VoiceInput } from "@/components/voice-input";
 
 const MyModelAdapter: ChatModelAdapter = {
   async run({ messages, abortSignal }) {
@@ -62,12 +57,6 @@ const MyModelAdapter: ChatModelAdapter = {
 export const Assistant = () => {
   const runtime = useLocalRuntime(MyModelAdapter);
 
-  const handleVoiceTranscript = (text: string) => {
-    // Here you can handle the transcribed text
-    // For example, you could send it directly to the chat
-    console.log("Voice transcript:", text);
-  };
-
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <SidebarProvider>
@@ -91,9 +80,6 @@ export const Assistant = () => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="ml-auto flex items-center gap-2">
-              <VoiceInput onTranscript={handleVoiceTranscript} />
-            </div>
           </header>
           <Thread />
         </SidebarInset>

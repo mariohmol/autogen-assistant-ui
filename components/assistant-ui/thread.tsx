@@ -17,10 +17,12 @@ import {
   SendHorizontalIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { VoiceInput } from "@/components/voice-input";
 
 export const Thread: FC = () => {
   return (
@@ -109,6 +111,19 @@ const ThreadWelcomeSuggestions: FC = () => {
 };
 
 const Composer: FC = () => {
+  const handleVoiceTranscript = (text: string) => {
+    // Use ComposerPrimitive's built-in methods to update content
+    const input = document.querySelector('textarea[placeholder="Write a message..."]') as HTMLTextAreaElement;
+    if (input) {
+      // Set the value and trigger the native input event
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
+      if (nativeInputValueSetter) {
+        nativeInputValueSetter.call(input, text);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
+  };
+
   return (
     <ComposerPrimitive.Root className="focus-within:border-ring/20 flex w-full flex-wrap items-end rounded-lg border bg-inherit px-2.5 shadow-sm transition-colors ease-in">
       <ComposerPrimitive.Input
@@ -117,14 +132,15 @@ const Composer: FC = () => {
         placeholder="Write a message..."
         className="placeholder:text-muted-foreground max-h-40 flex-grow resize-none border-none bg-transparent px-2 py-4 text-sm outline-none focus:ring-0 disabled:cursor-not-allowed"
       />
-      <ComposerAction />
+      <ComposerAction onVoiceTranscript={handleVoiceTranscript} />
     </ComposerPrimitive.Root>
   );
 };
 
-const ComposerAction: FC = () => {
+const ComposerAction: FC<{ onVoiceTranscript: (text: string) => void }> = ({ onVoiceTranscript }) => {
   return (
-    <>
+    <div className="flex items-center gap-1">
+      <VoiceInput onTranscript={onVoiceTranscript} />
       <ThreadPrimitive.If running={false}>
         <ComposerPrimitive.Send asChild>
           <TooltipIconButton
@@ -147,7 +163,7 @@ const ComposerAction: FC = () => {
           </TooltipIconButton>
         </ComposerPrimitive.Cancel>
       </ThreadPrimitive.If>
-    </>
+    </div>
   );
 };
 
